@@ -1,0 +1,2440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="description" content="甘肃汇森信息科技有限公司 - 专注通信业务与信息技术服务，为企业数字化转型赋能">
+    <meta name="theme-color" content="#0a0a0f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>甘肃汇森信息科技有限公司 | 官方网站</title>
+    
+    <!-- Favicon - 防止 404 错误 -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>汇</text></svg>">
+    
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <!-- ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    
+    <!-- Coze Web SDK - 延迟加载 -->
+    <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.19/libs/cn/index.js" defer></script>
+    
+    <!-- 全局错误处理 - 减少控制台噪音 -->
+    <script>
+        // 静默处理 Coze SDK 内部错误和第三方库警告
+        const originalConsoleError = console.error;
+        const originalConsoleWarn = console.warn;
+        const suppressPatterns = [
+            'ErrorBoundary',
+            'logger instance',
+            'Agora',
+            'WEB_SECURITY_RESTRICT',
+            'not found waiting'
+        ];
+        console.error = function(...args) {
+            const msg = args.join(' ');
+            if (!suppressPatterns.some(p => msg.includes(p))) {
+                originalConsoleError.apply(console, args);
+            }
+        };
+        console.warn = function(...args) {
+            const msg = args.join(' ');
+            if (!suppressPatterns.some(p => msg.includes(p))) {
+                originalConsoleWarn.apply(console, args);
+            }
+        };
+    </script>
+    
+    <!-- Google Fonts - Noto Sans SC + Space Grotesk Alternative -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- TailwindCSS Custom Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'huisen': {
+                            'dark': '#0a0a0f',
+                            'darker': '#050508',
+                            'accent': '#00f0ff',
+                            'accent2': '#7b2dff',
+                            'accent3': '#ff2d7b',
+                            'gold': '#ffd700',
+                            'success': '#00ff88',
+                            'warning': '#ffaa00',
+                            'danger': '#ff4444'
+                        }
+                    },
+                    fontFamily: {
+                        'display': ['Orbitron', 'sans-serif'],
+                        'body': ['Noto Sans SC', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* ============================================
+           自定义样式
+           ============================================ */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: #0a0a0f;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #0a0a0f;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #00f0ff, #7b2dff);
+            border-radius: 4px;
+        }
+        
+        /* 光标跟随效果 */
+        .cursor-glow {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(0, 240, 255, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s;
+        }
+        
+        /* Hero 背景动画 */
+        .hero-bg {
+            background: 
+                radial-gradient(ellipse at 20% 80%, rgba(123, 45, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(0, 240, 255, 0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(255, 45, 123, 0.1) 0%, transparent 70%),
+                linear-gradient(180deg, #050508 0%, #0a0a0f 50%, #0f0f18 100%);
+        }
+        
+        /* 网格背景 */
+        .grid-bg {
+            background-image: 
+                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+        
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 50px 50px; }
+        }
+        
+        /* 粒子效果 */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #00f0ff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00f0ff, 0 0 20px #00f0ff;
+            animation: float 15s infinite;
+            opacity: 0.6;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        /* 标题发光效果 */
+        .glow-text {
+            text-shadow: 
+                0 0 10px rgba(0, 240, 255, 0.8),
+                0 0 20px rgba(0, 240, 255, 0.6),
+                0 0 40px rgba(0, 240, 255, 0.4),
+                0 0 80px rgba(0, 240, 255, 0.2);
+        }
+        
+        .glow-text-purple {
+            text-shadow: 
+                0 0 10px rgba(123, 45, 255, 0.8),
+                0 0 20px rgba(123, 45, 255, 0.6),
+                0 0 40px rgba(123, 45, 255, 0.4);
+        }
+        
+        /* 卡片玻璃态效果 */
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass-card:hover {
+            border-color: rgba(0, 240, 255, 0.3);
+            box-shadow: 
+                0 8px 32px rgba(0, 240, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        /* 指标卡片 */
+        .stat-card {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .stat-card:hover::before {
+            left: 100%;
+        }
+        
+        /* 导航栏 */
+        .nav-link {
+            position: relative;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #00f0ff, #7b2dff);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .nav-link:hover {
+            color: #00f0ff;
+        }
+        
+        /* 按钮样式 */
+        .btn-glow {
+            position: relative;
+            background: linear-gradient(135deg, #00f0ff 0%, #7b2dff 100%);
+            border: none;
+            padding: 1rem 2rem;
+            color: #fff;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .btn-glow::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-glow:hover::before {
+            left: 100%;
+        }
+        
+        .btn-glow:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(0, 240, 255, 0.4);
+        }
+        
+        /* 数据表格样式 */
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        .data-table th {
+            background: linear-gradient(180deg, rgba(0, 240, 255, 0.2) 0%, rgba(0, 240, 255, 0.1) 100%);
+            padding: 1rem;
+            text-align: center;
+            font-weight: 600;
+            color: #00f0ff;
+            border-bottom: 2px solid rgba(0, 240, 255, 0.3);
+        }
+        
+        .data-table td {
+            padding: 0.875rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .data-table tr:hover td {
+            background: rgba(0, 240, 255, 0.05);
+        }
+        
+        /* 热力图颜色 */
+        .heat-high { background: rgba(255, 68, 68, 0.6) !important; color: #fff; }
+        .heat-medium { background: rgba(255, 170, 0, 0.6) !important; color: #fff; }
+        .heat-low { background: rgba(0, 255, 136, 0.3) !important; }
+        .heat-zero { background: rgba(255, 255, 255, 0.05) !important; color: rgba(255, 255, 255, 0.5); }
+        
+        /* ============================================
+           AI 企业大脑卡片样式
+           ============================================ */
+        .ai-brain-card {
+            position: relative;
+            background: linear-gradient(135deg, 
+                rgba(20, 20, 40, 0.9) 0%, 
+                rgba(30, 20, 60, 0.8) 50%,
+                rgba(15, 25, 50, 0.9) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(123, 45, 255, 0.3);
+            border-radius: 24px;
+            overflow: hidden;
+        }
+        
+        .ai-brain-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0deg 60deg,
+                rgba(0, 240, 255, 0.1) 60deg 120deg,
+                transparent 120deg 180deg,
+                rgba(123, 45, 255, 0.1) 180deg 240deg,
+                transparent 240deg 300deg,
+                rgba(255, 45, 123, 0.08) 300deg 360deg
+            );
+            animation: rotateGlow 10s linear infinite;
+            z-index: 0;
+        }
+        
+        @keyframes rotateGlow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .ai-brain-card-inner {
+            position: relative;
+            z-index: 1;
+            padding: 3rem;
+        }
+        
+        /* AI 大脑图标动画 */
+        .ai-brain-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 2rem;
+            position: relative;
+        }
+        
+        .ai-brain-icon::before {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(123, 45, 255, 0.4) 0%, transparent 70%);
+            animation: breathe 3s ease-in-out infinite;
+        }
+        
+        .ai-brain-icon::after {
+            content: '';
+            position: absolute;
+            inset: -20px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: rgba(0, 240, 255, 0.5);
+            border-right-color: rgba(123, 45, 255, 0.3);
+            animation: orbitRing 4s linear infinite;
+        }
+        
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        @keyframes orbitRing {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .ai-brain-icon-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7b2dff 0%, #00f0ff 50%, #ff2d7b 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 0 30px rgba(123, 45, 255, 0.5),
+                0 0 60px rgba(0, 240, 255, 0.3),
+                inset 0 0 30px rgba(255, 255, 255, 0.1);
+            animation: iconPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes iconPulse {
+            0%, 100% { box-shadow: 0 0 30px rgba(123, 45, 255, 0.5), 0 0 60px rgba(0, 240, 255, 0.3); }
+            50% { box-shadow: 0 0 50px rgba(123, 45, 255, 0.7), 0 0 80px rgba(0, 240, 255, 0.5); }
+        }
+        
+        /* 启动对话按钮 - 霓虹呼吸灯效果 */
+        .launch-ai-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 1.25rem 3rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, rgba(123, 45, 255, 0.8) 0%, rgba(0, 240, 255, 0.6) 100%);
+            border: none;
+            border-radius: 60px;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .launch-ai-btn::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 60px;
+            background: linear-gradient(135deg, #00f0ff, #7b2dff, #ff2d7b, #00f0ff);
+            background-size: 300% 300%;
+            animation: neonFlow 3s linear infinite;
+            z-index: -1;
+            filter: blur(8px);
+            opacity: 0.7;
+        }
+        
+        .launch-ai-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 60px;
+            background: linear-gradient(135deg, rgba(123, 45, 255, 0.9) 0%, rgba(0, 240, 255, 0.7) 100%);
+            z-index: -1;
+        }
+        
+        @keyframes neonFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .launch-ai-btn:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 
+                0 20px 40px rgba(123, 45, 255, 0.4),
+                0 0 60px rgba(0, 240, 255, 0.3);
+        }
+        
+        .launch-ai-btn:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+        
+        .launch-ai-btn .btn-icon {
+            width: 24px;
+            height: 24px;
+            animation: iconBounce 2s ease-in-out infinite;
+        }
+        
+        @keyframes iconBounce {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(4px); }
+        }
+        
+        /* 状态指示器 */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 30px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff88;
+            animation: statusPulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes statusPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+        
+        /* 功能标签 */
+        .feature-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+        
+        .feature-tag {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-tag:hover {
+            background: rgba(0, 240, 255, 0.1);
+            border-color: rgba(0, 240, 255, 0.3);
+            color: #00f0ff;
+        }
+        
+        /* Coze 悬浮图标位置调整 */
+        .coze-web-sdk-container,
+        [class*="coze-web-chat"] {
+            z-index: 9999 !important;
+        }
+        
+        /* 隐藏我们自定义的悬浮按钮，使用 Coze 自带的 */
+        .ai-container {
+            display: none;
+        }
+        
+        /* 加载动画 */
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(0, 240, 255, 0.1);
+            border-top: 3px solid #00f0ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 数字滚动动画 */
+        .counter {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+        }
+        
+        /* Section 分隔线 */
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.5), rgba(123, 45, 255, 0.5), transparent);
+        }
+        
+        /* 图表容器 */
+        .chart-container {
+            min-height: 350px;
+            width: 100%;
+        }
+        
+        /* ============================================
+           移动端响应式样式
+           ============================================ */
+        
+        /* 平板设备 (768px - 1024px) */
+        @media (max-width: 1024px) {
+            .chart-container {
+                min-height: 300px;
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: 0.6rem 0.5rem;
+                font-size: 0.85rem;
+            }
+            
+            .ai-brain-card-inner {
+                padding: 2rem;
+            }
+            
+            .ai-brain-icon {
+                width: 100px;
+                height: 100px;
+            }
+        }
+        
+        /* 手机设备 (< 768px) */
+        @media (max-width: 768px) {
+            .ai-panel {
+                width: 100vw;
+                height: 80vh;
+                right: -20px;
+                bottom: 70px;
+                border-radius: 20px 20px 0 0;
+            }
+            
+            /* 隐藏光标跟随效果 - 移动端无需 */
+            .cursor-glow {
+                display: none !important;
+            }
+            
+            /* 减少粒子数量提高性能 */
+            .particles .particle:nth-child(n+15) {
+                display: none;
+            }
+            
+            /* Dashboard 卡片 */
+            .stat-card {
+                padding: 1rem !important;
+            }
+            
+            .stat-card .counter {
+                font-size: 1.75rem !important;
+            }
+            
+            /* 图表容器 */
+            .chart-container {
+                min-height: 250px;
+            }
+            
+            /* 数据表格 - 水平滚动 */
+            .data-table {
+                font-size: 0.75rem;
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: 0.5rem 0.4rem;
+                min-width: 55px;
+            }
+            
+            .data-table th:first-child,
+            .data-table td:first-child {
+                position: sticky;
+                left: 0;
+                background: rgba(10, 10, 15, 0.98);
+                z-index: 10;
+                min-width: 70px;
+            }
+            
+            /* AI 大脑卡片 */
+            .ai-brain-card-inner {
+                padding: 1.5rem;
+            }
+            
+            .ai-brain-icon {
+                width: 80px;
+                height: 80px;
+                margin-bottom: 1.5rem;
+            }
+            
+            .ai-brain-icon-inner svg {
+                width: 2.5rem !important;
+                height: 2.5rem !important;
+            }
+            
+            /* 功能标签 */
+            .feature-tags {
+                gap: 8px;
+            }
+            
+            .feature-tag {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+            
+            /* 启动按钮 */
+            .launch-ai-btn {
+                padding: 1rem 2rem;
+                font-size: 1rem;
+                gap: 8px;
+            }
+            
+            /* Glass 卡片 */
+            .glass-card {
+                padding: 1rem !important;
+                border-radius: 16px;
+            }
+            
+            /* Section 间距 */
+            section {
+                padding-top: 3rem !important;
+                padding-bottom: 3rem !important;
+            }
+            
+            /* Coze 悬浮按钮位置 */
+            [class*="coze-entry"],
+            [class*="coze-web-chat-entry"] {
+                bottom: 70px !important;
+                right: 15px !important;
+                transform: scale(0.9);
+            }
+            
+            /* 聊天窗口优化 */
+            [class*="coze-web-chat-panel"],
+            [class*="coze-chat-window"] {
+                width: 100vw !important;
+                max-width: 100vw !important;
+                height: 75vh !important;
+                bottom: 0 !important;
+                right: 0 !important;
+                left: 0 !important;
+                border-radius: 16px 16px 0 0 !important;
+            }
+        }
+        
+        /* 小屏手机 (< 480px) */
+        @media (max-width: 480px) {
+            /* 隐藏装饰元素提高性能 */
+            .particles {
+                display: none;
+            }
+            
+            #hero .absolute.border {
+                display: none;
+            }
+            
+            /* 导航栏简化 */
+            nav .btn-glow {
+                padding: 0.5rem 1rem;
+                font-size: 0.75rem;
+            }
+            
+            /* 统计卡片 */
+            .stat-card .counter {
+                font-size: 1.5rem !important;
+            }
+            
+            /* AI 卡片简化 */
+            .ai-brain-icon::before,
+            .ai-brain-icon::after {
+                display: none;
+            }
+            
+            .ai-brain-card::before {
+                display: none;
+            }
+            
+            .launch-ai-btn {
+                padding: 0.875rem 1.5rem;
+                font-size: 0.9rem;
+            }
+            
+            .launch-ai-btn::before {
+                display: none;
+            }
+            
+            /* 关于我们装饰隐藏 */
+            #about .aspect-square .absolute.border,
+            #about .aspect-square .animate-spin {
+                display: none;
+            }
+        }
+        
+        /* 横屏手机优化 */
+        @media (max-height: 500px) and (orientation: landscape) {
+            #hero {
+                min-height: auto;
+                padding: 4rem 1rem;
+            }
+            
+            .ai-brain-card-inner {
+                padding: 1rem;
+            }
+            
+            .ai-brain-icon {
+                width: 60px;
+                height: 60px;
+                margin-bottom: 1rem;
+            }
+        }
+        
+        /* 触摸设备优化 */
+        @media (hover: none) and (pointer: coarse) {
+            /* 移除悬停效果 */
+            .nav-link::after {
+                display: none;
+            }
+            
+            .glass-card:hover {
+                border-color: rgba(255, 255, 255, 0.1);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            }
+            
+            .stat-card::before {
+                display: none;
+            }
+            
+            .feature-tag:hover {
+                background: rgba(255, 255, 255, 0.05);
+                border-color: rgba(255, 255, 255, 0.1);
+                color: rgba(255, 255, 255, 0.7);
+            }
+            
+            /* 增大点击区域 */
+            .nav-link,
+            .feature-tag,
+            button {
+                min-height: 44px;
+            }
+            
+            /* 禁用3D效果提高性能 */
+            .ai-brain-card {
+                transform: none !important;
+            }
+        }
+        
+        /* 移动端导航菜单 */
+        .mobile-menu-btn {
+            display: none;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 28px;
+            height: 24px;
+            padding: 0;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            z-index: 60;
+        }
+        
+        .mobile-menu-btn span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background: white;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-menu-btn.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+        
+        .mobile-menu-btn.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .mobile-menu-btn.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+        
+        .mobile-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(5, 5, 8, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 55;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-nav.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .mobile-nav a {
+            font-size: 1.5rem;
+            color: white;
+            text-decoration: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .mobile-nav.active a {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .mobile-nav.active a:nth-child(1) { transition-delay: 0.1s; }
+        .mobile-nav.active a:nth-child(2) { transition-delay: 0.15s; }
+        .mobile-nav.active a:nth-child(3) { transition-delay: 0.2s; }
+        .mobile-nav.active a:nth-child(4) { transition-delay: 0.25s; }
+        
+        .mobile-nav a:hover, .mobile-nav a:active {
+            background: rgba(0, 240, 255, 0.1);
+            color: #00f0ff;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: flex;
+            }
+            
+            nav .btn-glow {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 光标跟随效果 -->
+    <div class="cursor-glow" id="cursorGlow"></div>
+    
+    <!-- ============================================
+         导航栏
+         ============================================ -->
+    <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-huisen-accent to-huisen-accent2 flex items-center justify-center">
+                        <span class="font-display font-bold text-lg">汇</span>
+                    </div>
+                    <span class="font-body font-bold text-lg hidden sm:block">甘肃汇森</span>
+                </div>
+                
+                <!-- 导航链接 -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#hero" class="nav-link text-white/80 hover:text-white">首页</a>
+                    <a href="#dashboard" class="nav-link text-white/80 hover:text-white">业务报表</a>
+                    <a href="javascript:void(0)" onclick="openCozeChat()" class="nav-link text-white/80 hover:text-white flex items-center gap-2">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-huisen-success opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-huisen-success"></span>
+                        </span>
+                        AI 助手
+                    </a>
+                    <a href="#about" class="nav-link text-white/80 hover:text-white">关于我们</a>
+                </div>
+                
+                <!-- CTA 按钮 (桌面端) -->
+                <button class="btn-glow text-sm px-6 py-2 hidden md:block">
+                    立即咨询
+                </button>
+                
+                <!-- 移动端菜单按钮 -->
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="菜单">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- 移动端导航菜单 -->
+    <div class="mobile-nav" id="mobileNav">
+        <a href="#hero" onclick="closeMobileMenu()">首页</a>
+        <a href="#dashboard" onclick="closeMobileMenu()">业务报表</a>
+        <a href="javascript:void(0)" onclick="closeMobileMenu(); setTimeout(openCozeChat, 300);">AI 助手</a>
+        <a href="#about" onclick="closeMobileMenu()">关于我们</a>
+    </div>
+    
+    <!-- ============================================
+         Hero Section - 首页展示
+         ============================================ -->
+    <section id="hero" class="relative min-h-screen hero-bg overflow-hidden">
+        <!-- 网格背景 -->
+        <div class="grid-bg absolute inset-0"></div>
+        
+        <!-- 粒子效果 -->
+        <div class="particles" id="particles"></div>
+        
+        <!-- Hero 内容 -->
+        <div class="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 text-center">
+            <!-- 公司标语 -->
+            <div class="overflow-hidden mb-4">
+                <p class="text-huisen-accent font-display tracking-[0.3em] text-sm md:text-base opacity-0" id="tagline">
+                    GANSU HUISEN TECHNOLOGY
+                </p>
+            </div>
+            
+            <!-- 主标题 -->
+            <div class="overflow-hidden mb-6">
+                <h1 class="text-4xl md:text-6xl lg:text-8xl font-body font-black opacity-0" id="mainTitle">
+                    <span class="glow-text">甘肃汇森</span>
+                </h1>
+            </div>
+            
+            <div class="overflow-hidden mb-8">
+                <h2 class="text-2xl md:text-4xl lg:text-5xl font-body font-light text-white/80 opacity-0" id="subTitle">
+                    信息科技有限公司
+                </h2>
+            </div>
+            
+            <!-- 描述文字 -->
+            <div class="max-w-2xl mb-12">
+                <p class="text-white/60 text-lg md:text-xl leading-relaxed opacity-0" id="description">
+                    专注于通信业务、数字化转型，为企业提供<br>
+                    <span class="text-huisen-accent">全方位</span>的信息技术解决方案
+                </p>
+            </div>
+            
+            <!-- CTA 按钮组 -->
+            <div class="flex flex-col sm:flex-row gap-4 opacity-0" id="ctaButtons">
+                <a href="#dashboard" class="btn-glow text-center">
+                    查看业务数据
+                </a>
+                <button class="px-8 py-4 rounded-full border border-white/20 hover:border-huisen-accent hover:bg-huisen-accent/10 transition-all duration-300">
+                    了解更多
+                </button>
+            </div>
+            
+            <!-- 滚动提示 -->
+            <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 opacity-0" id="scrollHint">
+                <div class="flex flex-col items-center text-white/40">
+                    <span class="text-xs mb-2 tracking-wider">SCROLL</span>
+                    <div class="w-6 h-10 border-2 border-white/20 rounded-full flex justify-center">
+                        <div class="w-1 h-3 bg-huisen-accent rounded-full mt-2 animate-bounce"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 装饰性元素 -->
+        <div class="absolute top-1/4 left-10 w-32 h-32 border border-huisen-accent/20 rounded-full animate-pulse"></div>
+        <div class="absolute bottom-1/4 right-10 w-48 h-48 border border-huisen-accent2/20 rounded-full animate-pulse" style="animation-delay: 0.5s;"></div>
+    </section>
+    
+    <!-- 分隔线 -->
+    <div class="section-divider"></div>
+    
+    <!-- ============================================
+         Dashboard Section - 业务数据仪表盘
+         ============================================ -->
+    <section id="dashboard" class="relative py-20 bg-huisen-darker">
+        <div class="max-w-7xl mx-auto px-6">
+            <!-- Section 标题 -->
+            <div class="text-center mb-16">
+                <p class="text-huisen-accent font-display tracking-wider text-sm mb-4 opacity-0 dashboard-animate">BUSINESS ANALYTICS</p>
+                <h2 class="text-3xl md:text-5xl font-body font-bold mb-4 opacity-0 dashboard-animate">
+                    业务数据<span class="glow-text-purple">仪表盘</span>
+                </h2>
+                <p class="text-white/60 max-w-2xl mx-auto opacity-0 dashboard-animate">
+                    实时监控各渠道业务数据，数据驱动决策
+                </p>
+            </div>
+            
+            <!-- 核心指标卡片 -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-12">
+                <!-- 总新增 -->
+                <div class="glass-card stat-card rounded-2xl p-6 opacity-0 dashboard-animate">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-white/60 text-sm">总新增</span>
+                        <div class="w-10 h-10 rounded-full bg-huisen-accent/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-huisen-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="counter text-3xl md:text-4xl text-huisen-accent mb-2" data-target="346">0</div>
+                    <div class="flex items-center text-huisen-success text-sm">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                        </svg>
+                        <span>+12.5%</span>
+                    </div>
+                </div>
+                
+                <!-- 总宽带 -->
+                <div class="glass-card stat-card rounded-2xl p-6 opacity-0 dashboard-animate">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-white/60 text-sm">总宽带</span>
+                        <div class="w-10 h-10 rounded-full bg-huisen-accent2/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-huisen-accent2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="counter text-3xl md:text-4xl text-huisen-accent2 mb-2" data-target="144">0</div>
+                    <div class="flex items-center text-huisen-success text-sm">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                        </svg>
+                        <span>+8.3%</span>
+                    </div>
+                </div>
+                
+                <!-- 存量金币 -->
+                <div class="glass-card stat-card rounded-2xl p-6 opacity-0 dashboard-animate">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-white/60 text-sm">存量金币</span>
+                        <div class="w-10 h-10 rounded-full bg-huisen-gold/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-huisen-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="counter text-3xl md:text-4xl text-huisen-gold mb-2" data-target="363">0</div>
+                    <div class="flex items-center text-huisen-warning text-sm">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                        </svg>
+                        <span>持平</span>
+                    </div>
+                </div>
+                
+                <!-- 低提 -->
+                <div class="glass-card stat-card rounded-2xl p-6 opacity-0 dashboard-animate">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-white/60 text-sm">低提</span>
+                        <div class="w-10 h-10 rounded-full bg-huisen-danger/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-huisen-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="counter text-3xl md:text-4xl text-huisen-danger mb-2" data-target="406">0</div>
+                    <div class="flex items-center text-huisen-danger text-sm">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                        </svg>
+                        <span>需关注</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 图表区域 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+                <!-- 柱状图 - 各渠道新增与宽带对比 -->
+                <div class="glass-card rounded-2xl p-6 opacity-0 dashboard-animate">
+                    <h3 class="text-lg font-bold mb-4 flex items-center">
+                        <span class="w-3 h-3 rounded-full bg-huisen-accent mr-3"></span>
+                        各渠道业务对比
+                    </h3>
+                    <div id="barChart" class="chart-container"></div>
+                </div>
+                
+                <!-- 饼图 - 存量金币分布 -->
+                <div class="glass-card rounded-2xl p-6 opacity-0 dashboard-animate">
+                    <h3 class="text-lg font-bold mb-4 flex items-center">
+                        <span class="w-3 h-3 rounded-full bg-huisen-accent2 mr-3"></span>
+                        存量金币分布
+                    </h3>
+                    <div id="pieChart" class="chart-container"></div>
+                </div>
+            </div>
+            
+            <!-- 雷达图和折线图 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+                <!-- 雷达图 -->
+                <div class="glass-card rounded-2xl p-6 opacity-0 dashboard-animate">
+                    <h3 class="text-lg font-bold mb-4 flex items-center">
+                        <span class="w-3 h-3 rounded-full bg-huisen-success mr-3"></span>
+                        综合指标分析
+                    </h3>
+                    <div id="radarChart" class="chart-container"></div>
+                </div>
+                
+                <!-- 折线图 -->
+                <div class="glass-card rounded-2xl p-6 opacity-0 dashboard-animate">
+                    <h3 class="text-lg font-bold mb-4 flex items-center">
+                        <span class="w-3 h-3 rounded-full bg-huisen-gold mr-3"></span>
+                        业务趋势
+                    </h3>
+                    <div id="lineChart" class="chart-container"></div>
+                </div>
+            </div>
+            
+            <!-- 数据表格 - 热力图样式 -->
+            <div class="glass-card rounded-2xl p-6 opacity-0 dashboard-animate overflow-x-auto">
+                <h3 class="text-lg font-bold mb-6 flex items-center">
+                    <span class="w-3 h-3 rounded-full bg-huisen-accent3 mr-3"></span>
+                    渠道详细数据
+                </h3>
+                <table class="data-table" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>渠道</th>
+                            <th>新增</th>
+                            <th>宽带</th>
+                            <th>新增金币</th>
+                            <th>存量金币</th>
+                            <th>低提</th>
+                            <th>千兆</th>
+                            <th>亲情网</th>
+                            <th>移动爱家</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- 数据将通过 JS 动态加载 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 分隔线 -->
+    <div class="section-divider"></div>
+    
+    <!-- ============================================
+         AI 助手 Section
+         ============================================ -->
+    <section id="ai-section" class="relative py-20 bg-huisen-dark">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <p class="text-huisen-accent2 font-display tracking-wider text-sm mb-4 opacity-0 ai-animate">AI ASSISTANT</p>
+                <h2 class="text-3xl md:text-5xl font-body font-bold mb-4 opacity-0 ai-animate">
+                    智能<span class="glow-text">AI 助手</span>
+                </h2>
+                <p class="text-white/60 max-w-2xl mx-auto opacity-0 ai-animate">
+                    集成 Coze 智能体，为您提供智能问答和业务分析
+                </p>
+            </div>
+            
+            <!-- AI 功能卡片 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div class="glass-card rounded-2xl p-8 text-center opacity-0 ai-animate">
+                    <div class="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-br from-huisen-accent to-huisen-accent2 flex items-center justify-center">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">智能问答</h3>
+                    <p class="text-white/60">随时提问，AI 即时解答您的业务问题</p>
+                </div>
+                
+                <div class="glass-card rounded-2xl p-8 text-center opacity-0 ai-animate">
+                    <div class="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-br from-huisen-accent2 to-huisen-accent3 flex items-center justify-center">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">数据分析</h3>
+                    <p class="text-white/60">AI 驱动的数据洞察，发现业务增长点</p>
+                </div>
+                
+                <div class="glass-card rounded-2xl p-8 text-center opacity-0 ai-animate">
+                    <div class="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-br from-huisen-accent3 to-huisen-gold flex items-center justify-center">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">快速决策</h3>
+                    <p class="text-white/60">基于数据的智能建议，助力业务决策</p>
+                </div>
+            </div>
+            
+            <!-- AI 企业大脑卡片 -->
+            <div class="ai-brain-card opacity-0 ai-animate" id="aiBrainCard">
+                <div class="ai-brain-card-inner text-center">
+                    <!-- 状态指示器 -->
+                    <div class="status-indicator mx-auto mb-8 inline-flex">
+                        <span class="status-dot"></span>
+                        <span class="text-huisen-success text-sm font-medium">AI 智能体在线</span>
+                    </div>
+                    
+                    <!-- AI 大脑图标 -->
+                    <div class="ai-brain-icon" id="aiBrainIcon">
+                        <div class="ai-brain-icon-inner">
+                            <svg class="w-14 h-14 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" 
+                                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                                </path>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <!-- 主标题 -->
+                    <h3 class="text-3xl md:text-4xl font-bold mb-3">
+                        <span class="bg-gradient-to-r from-huisen-accent via-huisen-accent2 to-huisen-accent3 bg-clip-text text-transparent">
+                            汇森企业大脑
+                        </span>
+                    </h3>
+                    <p class="text-huisen-accent/80 font-display text-sm tracking-wider mb-6">
+                        HUISEN ENTERPRISE BRAIN
+                    </p>
+                    
+                    <!-- 描述 -->
+                    <p class="text-white/60 text-lg max-w-lg mx-auto mb-8 leading-relaxed">
+                        基于 <span class="text-huisen-accent">Coze</span> 智能驱动，实时分析您的业务数据<br>
+                        为您提供智能问答、数据洞察与决策支持
+                    </p>
+                    
+                    <!-- 功能标签 -->
+                    <div class="feature-tags mb-10">
+                        <span class="feature-tag">💬 智能对话</span>
+                        <span class="feature-tag">📊 数据分析</span>
+                        <span class="feature-tag">🎯 精准建议</span>
+                        <span class="feature-tag">⚡ 实时响应</span>
+                    </div>
+                    
+                    <!-- 启动对话按钮 -->
+                    <button class="launch-ai-btn" id="launchAiBtn" onclick="openCozeChat()">
+                        <span>启动 AI 对话</span>
+                        <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                d="M13 7l5 5m0 0l-5 5m5-5H6">
+                            </path>
+                        </svg>
+                    </button>
+                    
+                    <!-- 提示文字 -->
+                    <p class="text-white/40 text-sm mt-6">
+                        点击按钮或右下角图标开始对话
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 分隔线 -->
+    <div class="section-divider"></div>
+    
+    <!-- ============================================
+         关于我们 Section
+         ============================================ -->
+    <section id="about" class="relative py-20 bg-huisen-darker">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <!-- 左侧内容 -->
+                <div class="opacity-0 about-animate">
+                    <p class="text-huisen-accent font-display tracking-wider text-sm mb-4">ABOUT US</p>
+                    <h2 class="text-3xl md:text-5xl font-body font-bold mb-6">
+                        关于<span class="glow-text">汇森</span>
+                    </h2>
+                    <p class="text-white/60 text-lg leading-relaxed mb-6">
+                        甘肃汇森信息科技有限公司是一家专注于通信业务及信息技术服务的创新型企业。
+                        我们致力于为客户提供高效、可靠的数字化解决方案。
+                    </p>
+                    <p class="text-white/60 text-lg leading-relaxed mb-8">
+                        凭借专业的团队和丰富的行业经验，我们已服务众多渠道合作伙伴，
+                        共同推动区域通信业务的发展。
+                    </p>
+                    
+                    <!-- 统计数字 -->
+                    <div class="grid grid-cols-3 gap-6">
+                        <div>
+                            <div class="text-3xl font-display font-bold text-huisen-accent mb-2">9+</div>
+                            <div class="text-white/60 text-sm">合作渠道</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-display font-bold text-huisen-accent2 mb-2">346</div>
+                            <div class="text-white/60 text-sm">月均新增</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-display font-bold text-huisen-gold mb-2">100%</div>
+                            <div class="text-white/60 text-sm">客户满意</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 右侧装饰 -->
+                <div class="relative opacity-0 about-animate">
+                    <div class="aspect-square max-w-md mx-auto relative">
+                        <!-- 装饰圆环 -->
+                        <div class="absolute inset-0 border-2 border-huisen-accent/20 rounded-full animate-spin" style="animation-duration: 20s;"></div>
+                        <div class="absolute inset-4 border-2 border-huisen-accent2/20 rounded-full animate-spin" style="animation-duration: 15s; animation-direction: reverse;"></div>
+                        <div class="absolute inset-8 border-2 border-huisen-accent3/20 rounded-full animate-spin" style="animation-duration: 10s;"></div>
+                        
+                        <!-- 中心 Logo -->
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="w-32 h-32 rounded-2xl bg-gradient-to-br from-huisen-accent via-huisen-accent2 to-huisen-accent3 flex items-center justify-center shadow-2xl">
+                                <span class="font-body font-black text-5xl text-white">汇森</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 浮动标签 -->
+                        <div class="absolute top-10 right-0 glass-card rounded-lg px-4 py-2 text-sm">
+                            <span class="text-huisen-accent">●</span> 通信服务
+                        </div>
+                        <div class="absolute bottom-10 left-0 glass-card rounded-lg px-4 py-2 text-sm">
+                            <span class="text-huisen-accent2">●</span> 数字化转型
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- ============================================
+         Footer
+         ============================================ -->
+    <footer class="bg-huisen-dark border-t border-white/5 py-12">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <!-- Logo 和简介 -->
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-huisen-accent to-huisen-accent2 flex items-center justify-center">
+                            <span class="font-display font-bold text-lg">汇</span>
+                        </div>
+                        <span class="font-body font-bold text-lg">甘肃汇森信息科技有限公司</span>
+                    </div>
+                    <p class="text-white/40 text-sm leading-relaxed">
+                        专注通信业务与信息技术服务<br>
+                        为企业数字化转型赋能
+                    </p>
+                </div>
+                
+                <!-- 快速链接 -->
+                <div>
+                    <h4 class="font-bold mb-4">快速链接</h4>
+                    <ul class="space-y-2 text-white/40 text-sm">
+                        <li><a href="#hero" class="hover:text-huisen-accent transition-colors">首页</a></li>
+                        <li><a href="#dashboard" class="hover:text-huisen-accent transition-colors">业务报表</a></li>
+                        <li><a href="#ai-section" class="hover:text-huisen-accent transition-colors">AI 助手</a></li>
+                        <li><a href="#about" class="hover:text-huisen-accent transition-colors">关于我们</a></li>
+                    </ul>
+                </div>
+                
+                <!-- 联系方式 -->
+                <div>
+                    <h4 class="font-bold mb-4">联系我们</h4>
+                    <ul class="space-y-2 text-white/40 text-sm">
+                        <li>📍 甘肃省兰州市</li>
+                        <li>📞 400-XXX-XXXX</li>
+                        <li>✉️ contact@huisen.com</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- 版权信息 -->
+            <div class="border-t border-white/5 pt-8 text-center">
+                <p class="text-white/30 text-sm">
+                    © 2024 甘肃汇森信息科技有限公司 版权所有 | 
+                    <a href="#" class="hover:text-huisen-accent transition-colors">陇ICP备XXXXXXXX号</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Coze SDK 会自动生成悬浮窗按钮 -->
+    
+    <!-- ============================================
+         JavaScript
+         ============================================ -->
+    <script>
+        // ============================================
+        // 全局变量
+        // ============================================
+        let businessData = [];
+        
+        // ============================================
+        // 页面加载完成后执行
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化所有功能
+            initCursorGlow();
+            initParticles();
+            initHeroAnimations();
+            initScrollAnimations();
+            initNavbarScroll();
+            loadBusinessData();
+            initCozeSDK();
+        });
+        
+        // ============================================
+        // Coze SDK 初始化 - 全局实例
+        // ============================================
+        let cozeClient = null;
+        let cozeButtonElement = null;
+        
+        function initCozeSDK() {
+            // 检查 SDK 是否已加载
+            if (typeof CozeWebSDK === 'undefined') {
+                // 等待 SDK 加载
+                let retryCount = 0;
+                const checkSDK = setInterval(() => {
+                    retryCount++;
+                    if (typeof CozeWebSDK !== 'undefined') {
+                        clearInterval(checkSDK);
+                        createCozeClient();
+                    } else if (retryCount >= 15) {
+                        clearInterval(checkSDK);
+                    }
+                }, 500);
+            } else {
+                createCozeClient();
+            }
+        }
+        
+        function createCozeClient() {
+            try {
+                // 创建 Coze 智能体实例（悬浮窗模式）
+                cozeClient = new CozeWebSDK.WebChatClient({
+                    config: {
+                        bot_id: '7595849107479543808',
+                    },
+                    componentProps: {
+                        title: '汇森小助手',
+                        layout: window.innerWidth < 768 ? 'mobile' : 'pc',
+                    },
+                    auth: {
+                        type: 'token',
+                        token: 'pat_zAulkIkG2WPLUKeqQWrfahODPLT0ktrTZxm8VWKv1aJVn6jxTC1I7cNIV6KCRomG',
+                        onRefreshToken: function () {
+                            return 'pat_zAulkIkG2WPLUKeqQWrfahODPLT0ktrTZxm8VWKv1aJVn6jxTC1I7cNIV6KCRomG'
+                        }
+                    }
+                });
+                
+                // 等待 DOM 生成后查找按钮
+                setTimeout(() => {
+                    findCozeButton();
+                    adjustCozeButtonPosition();
+                }, 2000);
+                
+            } catch (error) {
+                // 静默处理错误
+            }
+        }
+        
+        // 查找并保存 Coze 按钮引用
+        function findCozeButton() {
+            const selectors = [
+                '[class*="coze"] button',
+                'button[class*="coze"]',
+                '.coze-web-sdk-container button',
+                '[class*="coze-entry"]',
+                '[class*="coze-web-chat-entry"]'
+            ];
+            
+            for (const selector of selectors) {
+                const btn = document.querySelector(selector);
+                if (btn) {
+                    cozeButtonElement = btn;
+                    return btn;
+                }
+            }
+            
+            // 查找所有可能的元素
+            const allElements = document.querySelectorAll('*');
+            for (const el of allElements) {
+                const className = el.className?.toString() || '';
+                if (className.includes('coze') && 
+                    (el.tagName === 'BUTTON' || el.getAttribute('role') === 'button')) {
+                    cozeButtonElement = el;
+                    return el;
+                }
+            }
+            return null;
+        }
+        
+        // 调整 Coze 悬浮按钮位置
+        function adjustCozeButtonPosition() {
+            const style = document.createElement('style');
+            style.id = 'coze-position-fix';
+            if (document.getElementById('coze-position-fix')) return;
+            
+            style.textContent = `
+                .coze-web-sdk-container { z-index: 9999 !important; }
+                [class*="coze-web-chat-entry"], [class*="coze-entry-btn"] {
+                    bottom: 80px !important;
+                    right: 25px !important;
+                    z-index: 9999 !important;
+                }
+                [class*="coze-web-chat-panel"], [class*="coze-chat-window"] {
+                    z-index: 9998 !important;
+                }
+                @media (max-width: 768px) {
+                    [class*="coze-web-chat-entry"], [class*="coze-entry-btn"] {
+                        bottom: 70px !important;
+                        right: 15px !important;
+                        transform: scale(0.9);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // ============================================
+        // 打开 Coze 聊天窗口
+        // ============================================
+        function openCozeChat() {
+            // 添加按钮点击动效
+            animateLaunchButton();
+            
+            // 方法1: 如果已保存按钮引用，直接点击
+            if (cozeButtonElement && document.body.contains(cozeButtonElement)) {
+                try {
+                    cozeButtonElement.click();
+                    return;
+                } catch (e) {}
+            }
+            
+            // 方法2: 尝试调用 SDK 的方法
+            if (cozeClient) {
+                const methods = ['open', 'show', 'toggle', 'showChat'];
+                for (const method of methods) {
+                    if (typeof cozeClient[method] === 'function') {
+                        try {
+                            cozeClient[method]();
+                            return;
+                        } catch (e) {}
+                    }
+                }
+            }
+            
+            // 方法3: 重新查找并点击按钮
+            const foundButton = findCozeButton();
+            if (foundButton) {
+                try {
+                    foundButton.click();
+                    return;
+                } catch (e) {}
+            }
+            
+            // 方法4: 搜索并点击 Coze 元素
+            const allElements = document.querySelectorAll('[class*="coze"]');
+            for (const el of allElements) {
+                if (el.tagName === 'BUTTON' || el.getAttribute('role') === 'button') {
+                    try {
+                        el.click();
+                        return;
+                    } catch (e) {}
+                }
+            }
+            
+            // 方法5: 重试机制
+            if (typeof CozeWebSDK !== 'undefined') {
+                let retryCount = 0;
+                const retryInterval = setInterval(() => {
+                    retryCount++;
+                    const btn = findCozeButton();
+                    if (btn) {
+                        btn.click();
+                        clearInterval(retryInterval);
+                    } else if (retryCount >= 10) {
+                        clearInterval(retryInterval);
+                        // 滚动到 AI 区域
+                        document.getElementById('ai-section')?.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 300);
+            }
+        }
+        
+        // ============================================
+        // 启动按钮动效
+        // ============================================
+        function animateLaunchButton() {
+            const btn = document.getElementById('launchAiBtn');
+            if (btn && typeof gsap !== 'undefined') {
+                gsap.to(btn, {
+                    scale: 0.95,
+                    duration: 0.1,
+                    yoyo: true,
+                    repeat: 1,
+                    ease: 'power2.inOut'
+                });
+            }
+        }
+        
+        // ============================================
+        // 光标跟随效果
+        // ============================================
+        function initCursorGlow() {
+            const cursorGlow = document.getElementById('cursorGlow');
+            
+            document.addEventListener('mousemove', (e) => {
+                cursorGlow.style.left = e.clientX + 'px';
+                cursorGlow.style.top = e.clientY + 'px';
+            });
+            
+            document.addEventListener('mouseleave', () => {
+                cursorGlow.style.opacity = '0';
+            });
+            
+            document.addEventListener('mouseenter', () => {
+                cursorGlow.style.opacity = '1';
+            });
+        }
+        
+        // ============================================
+        // 粒子效果
+        // ============================================
+        function initParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                
+                // 随机颜色
+                const colors = ['#00f0ff', '#7b2dff', '#ff2d7b', '#ffd700'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.boxShadow = `0 0 10px ${particle.style.background}`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // ============================================
+        // Hero 区域动画
+        // ============================================
+        function initHeroAnimations() {
+            // 使用 GSAP 创建入场动画
+            const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+            
+            tl.to('#tagline', {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                delay: 0.5
+            })
+            .to('#mainTitle', {
+                opacity: 1,
+                y: 0,
+                duration: 1.2
+            }, '-=0.5')
+            .to('#subTitle', {
+                opacity: 1,
+                y: 0,
+                duration: 1
+            }, '-=0.7')
+            .to('#description', {
+                opacity: 1,
+                y: 0,
+                duration: 1
+            }, '-=0.5')
+            .to('#ctaButtons', {
+                opacity: 1,
+                y: 0,
+                duration: 0.8
+            }, '-=0.3')
+            .to('#scrollHint', {
+                opacity: 1,
+                duration: 0.8
+            }, '-=0.2');
+        }
+        
+        // ============================================
+        // 滚动动画
+        // ============================================
+        function initScrollAnimations() {
+            // 注册 ScrollTrigger 插件
+            gsap.registerPlugin(ScrollTrigger);
+            
+            // Dashboard 区域动画
+            gsap.utils.toArray('.dashboard-animate').forEach((el, i) => {
+                gsap.to(el, {
+                    scrollTrigger: {
+                        trigger: el,
+                        start: 'top 85%',
+                        toggleActions: 'play none none none'
+                    },
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    delay: i * 0.1
+                });
+            });
+            
+            // AI 区域动画
+            gsap.utils.toArray('.ai-animate').forEach((el, i) => {
+                gsap.to(el, {
+                    scrollTrigger: {
+                        trigger: el,
+                        start: 'top 85%',
+                        toggleActions: 'play none none none'
+                    },
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    delay: i * 0.1
+                });
+            });
+            
+            // 关于我们动画
+            gsap.utils.toArray('.about-animate').forEach((el, i) => {
+                gsap.to(el, {
+                    scrollTrigger: {
+                        trigger: el,
+                        start: 'top 85%',
+                        toggleActions: 'play none none none'
+                    },
+                    opacity: 1,
+                    x: 0,
+                    duration: 1,
+                    delay: i * 0.2
+                });
+            });
+        }
+        
+        // ============================================
+        // 导航栏滚动效果
+        // ============================================
+        function initNavbarScroll() {
+            const navbar = document.getElementById('navbar');
+            
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 100) {
+                    navbar.classList.add('bg-huisen-dark/90', 'backdrop-blur-lg', 'shadow-lg');
+                } else {
+                    navbar.classList.remove('bg-huisen-dark/90', 'backdrop-blur-lg', 'shadow-lg');
+                }
+            });
+            
+            // 移动端菜单功能
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileNav = document.getElementById('mobileNav');
+            
+            if (mobileMenuBtn && mobileNav) {
+                mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+            }
+        }
+        
+        // 移动端菜单切换
+        function toggleMobileMenu() {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileNav = document.getElementById('mobileNav');
+            
+            mobileMenuBtn.classList.toggle('active');
+            mobileNav.classList.toggle('active');
+            
+            // 禁止/允许背景滚动
+            document.body.style.overflow = mobileNav.classList.contains('active') ? 'hidden' : '';
+        }
+        
+        // 关闭移动端菜单
+        function closeMobileMenu() {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileNav = document.getElementById('mobileNav');
+            
+            mobileMenuBtn.classList.remove('active');
+            mobileNav.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        // ============================================
+        // 加载业务数据
+        // ============================================
+        async function loadBusinessData() {
+            try {
+                // 尝试从 API 获取数据
+                const response = await fetch('api/api.php?action=chart_data');
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    businessData = result.data;
+                    initCharts(result.data);
+                    renderTable(result.data.raw);
+                    animateCounters(result.data);
+                } else {
+                    // 使用默认数据
+                    useDefaultData();
+                }
+            } catch (error) {
+                console.log('API 请求失败，使用默认数据:', error);
+                useDefaultData();
+            }
+        }
+        
+        // ============================================
+        // 使用默认数据
+        // ============================================
+        function useDefaultData() {
+            const defaultData = {
+                channels: ['七里河恒巨', '城关汇达旗舰店', '西固冯立超', '西固金恒生', '城关恒巨', '汇森同创', '西峰区统办楼', '安定区物美超市', '成县于军旗'],
+                newAdds: [85, 81, 90, 5, 85, 0, 0, 0, 0],
+                broadband: [34, 27, 46, 0, 37, 0, 0, 0, 0],
+                newCoins: [44, 46, 39, 0, 22, 0, 0, 0, 0],
+                stockCoins: [0, 0, 73, 3, 0, 70, 57, 115, 45],
+                lowCommission: [405, 0, 0, 0, 0, 1, 0, 0, 0],
+                gigabit: [38, 0, 0, 0, 0, 0, 0, 0, 0],
+                familyNet: [9, 5, 5, 1, 5, 0, 0, 0, 0],
+                mobileHome: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                raw: [
+                    {channel_name: '七里河恒巨', new_adds: 85, broadband: 34, new_coins: 44, stock_coins: 0, low_commission: 405, gigabit: 38, family_net: 9, mobile_home: 0},
+                    {channel_name: '城关汇达旗舰店', new_adds: 81, broadband: 27, new_coins: 46, stock_coins: 0, low_commission: 0, gigabit: 0, family_net: 5, mobile_home: 0},
+                    {channel_name: '西固冯立超', new_adds: 90, broadband: 46, new_coins: 39, stock_coins: 73, low_commission: 0, gigabit: 0, family_net: 5, mobile_home: 0},
+                    {channel_name: '西固金恒生', new_adds: 5, broadband: 0, new_coins: 0, stock_coins: 3, low_commission: 0, gigabit: 0, family_net: 1, mobile_home: 0},
+                    {channel_name: '城关恒巨', new_adds: 85, broadband: 37, new_coins: 22, stock_coins: 0, low_commission: 0, gigabit: 0, family_net: 5, mobile_home: 0},
+                    {channel_name: '汇森同创', new_adds: 0, broadband: 0, new_coins: 0, stock_coins: 70, low_commission: 1, gigabit: 0, family_net: 0, mobile_home: 0},
+                    {channel_name: '西峰区统办楼', new_adds: 0, broadband: 0, new_coins: 0, stock_coins: 57, low_commission: 0, gigabit: 0, family_net: 0, mobile_home: 0},
+                    {channel_name: '安定区物美超市', new_adds: 0, broadband: 0, new_coins: 0, stock_coins: 115, low_commission: 0, gigabit: 0, family_net: 0, mobile_home: 0},
+                    {channel_name: '成县于军旗', new_adds: 0, broadband: 0, new_coins: 0, stock_coins: 45, low_commission: 0, gigabit: 0, family_net: 0, mobile_home: 0}
+                ]
+            };
+            
+            businessData = defaultData;
+            initCharts(defaultData);
+            renderTable(defaultData.raw);
+            animateCounters(defaultData);
+        }
+        
+        // ============================================
+        // 数字滚动动画
+        // ============================================
+        function animateCounters(data) {
+            const counters = document.querySelectorAll('.counter');
+            
+            // 计算总计
+            const totals = {
+                newAdds: data.newAdds.reduce((a, b) => a + b, 0),
+                broadband: data.broadband.reduce((a, b) => a + b, 0),
+                stockCoins: data.stockCoins.reduce((a, b) => a + b, 0),
+                lowCommission: data.lowCommission.reduce((a, b) => a + b, 0)
+            };
+            
+            // 更新目标值
+            counters[0].dataset.target = totals.newAdds;
+            counters[1].dataset.target = totals.broadband;
+            counters[2].dataset.target = totals.stockCoins;
+            counters[3].dataset.target = totals.lowCommission;
+            
+            // 执行动画
+            counters.forEach(counter => {
+                const target = parseInt(counter.dataset.target);
+                const duration = 2000;
+                const increment = target / (duration / 16);
+                let current = 0;
+                
+                const updateCounter = () => {
+                    current += increment;
+                    if (current < target) {
+                        counter.textContent = Math.floor(current);
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.textContent = target;
+                    }
+                };
+                
+                // 使用 ScrollTrigger 触发
+                ScrollTrigger.create({
+                    trigger: counter,
+                    start: 'top 85%',
+                    onEnter: updateCounter,
+                    once: true
+                });
+            });
+        }
+        
+        // ============================================
+        // 初始化图表
+        // ============================================
+        function initCharts(data) {
+            initBarChart(data);
+            initPieChart(data);
+            initRadarChart(data);
+            initLineChart(data);
+        }
+        
+        // ============================================
+        // 柱状图 - 各渠道业务对比
+        // ============================================
+        function initBarChart(data) {
+            const chart = echarts.init(document.getElementById('barChart'));
+            
+            const option = {
+                backgroundColor: 'transparent',
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' },
+                    backgroundColor: 'rgba(10, 10, 15, 0.9)',
+                    borderColor: 'rgba(0, 240, 255, 0.3)',
+                    textStyle: { color: '#fff' }
+                },
+                legend: {
+                    data: ['新增', '宽带', '新增金币'],
+                    textStyle: { color: 'rgba(255, 255, 255, 0.6)' },
+                    top: 0
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '15%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: data.channels,
+                    axisLabel: {
+                        color: 'rgba(255, 255, 255, 0.6)',
+                        rotate: 30,
+                        fontSize: 10
+                    },
+                    axisLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.1)' } }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: { color: 'rgba(255, 255, 255, 0.6)' },
+                    axisLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.1)' } },
+                    splitLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.05)' } }
+                },
+                series: [
+                    {
+                        name: '新增',
+                        type: 'bar',
+                        data: data.newAdds,
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: '#00f0ff' },
+                                { offset: 1, color: '#0080ff' }
+                            ]),
+                            borderRadius: [4, 4, 0, 0]
+                        }
+                    },
+                    {
+                        name: '宽带',
+                        type: 'bar',
+                        data: data.broadband,
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: '#7b2dff' },
+                                { offset: 1, color: '#4a1d99' }
+                            ]),
+                            borderRadius: [4, 4, 0, 0]
+                        }
+                    },
+                    {
+                        name: '新增金币',
+                        type: 'bar',
+                        data: data.newCoins,
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: '#ffd700' },
+                                { offset: 1, color: '#ff8c00' }
+                            ]),
+                            borderRadius: [4, 4, 0, 0]
+                        }
+                    }
+                ]
+            };
+            
+            chart.setOption(option);
+            
+            // 响应式
+            window.addEventListener('resize', () => chart.resize());
+        }
+        
+        // ============================================
+        // 饼图 - 存量金币分布
+        // ============================================
+        function initPieChart(data) {
+            const chart = echarts.init(document.getElementById('pieChart'));
+            
+            // 过滤掉存量金币为0的渠道
+            const pieData = data.channels.map((name, i) => ({
+                name: name,
+                value: data.stockCoins[i]
+            })).filter(item => item.value > 0);
+            
+            const option = {
+                backgroundColor: 'transparent',
+                tooltip: {
+                    trigger: 'item',
+                    backgroundColor: 'rgba(10, 10, 15, 0.9)',
+                    borderColor: 'rgba(123, 45, 255, 0.3)',
+                    textStyle: { color: '#fff' },
+                    formatter: '{b}: {c} ({d}%)'
+                },
+                legend: {
+                    orient: 'vertical',
+                    right: '5%',
+                    top: 'center',
+                    textStyle: { color: 'rgba(255, 255, 255, 0.6)', fontSize: 11 }
+                },
+                series: [
+                    {
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        center: ['40%', '50%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#0a0a0f',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: 20,
+                                fontWeight: 'bold',
+                                color: '#fff'
+                            }
+                        },
+                        labelLine: { show: false },
+                        data: pieData,
+                        color: ['#00f0ff', '#7b2dff', '#ff2d7b', '#ffd700', '#00ff88', '#ff8c00']
+                    }
+                ]
+            };
+            
+            chart.setOption(option);
+            window.addEventListener('resize', () => chart.resize());
+        }
+        
+        // ============================================
+        // 雷达图 - 综合指标分析
+        // ============================================
+        function initRadarChart(data) {
+            const chart = echarts.init(document.getElementById('radarChart'));
+            
+            // 取前5个有数据的渠道
+            const activeChannels = data.channels.filter((_, i) => 
+                data.newAdds[i] > 0 || data.broadband[i] > 0
+            ).slice(0, 5);
+            
+            const radarData = activeChannels.map((name, idx) => {
+                const i = data.channels.indexOf(name);
+                return {
+                    name: name,
+                    value: [
+                        data.newAdds[i],
+                        data.broadband[i],
+                        data.newCoins[i],
+                        data.familyNet[i],
+                        data.gigabit[i]
+                    ]
+                };
+            });
+            
+            const option = {
+                backgroundColor: 'transparent',
+                tooltip: {
+                    backgroundColor: 'rgba(10, 10, 15, 0.9)',
+                    borderColor: 'rgba(0, 255, 136, 0.3)',
+                    textStyle: { color: '#fff' }
+                },
+                legend: {
+                    data: activeChannels,
+                    bottom: 0,
+                    textStyle: { color: 'rgba(255, 255, 255, 0.6)', fontSize: 10 }
+                },
+                radar: {
+                    indicator: [
+                        { name: '新增', max: 100 },
+                        { name: '宽带', max: 50 },
+                        { name: '新增金币', max: 50 },
+                        { name: '亲情网', max: 15 },
+                        { name: '千兆', max: 50 }
+                    ],
+                    shape: 'polygon',
+                    splitNumber: 4,
+                    axisName: { color: 'rgba(255, 255, 255, 0.6)' },
+                    splitLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.1)' } },
+                    splitArea: { 
+                        show: true,
+                        areaStyle: { color: ['rgba(0, 240, 255, 0.02)', 'rgba(0, 240, 255, 0.04)'] }
+                    },
+                    axisLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.1)' } }
+                },
+                series: [{
+                    type: 'radar',
+                    data: radarData,
+                    symbol: 'circle',
+                    symbolSize: 6,
+                    lineStyle: { width: 2 },
+                    areaStyle: { opacity: 0.2 }
+                }],
+                color: ['#00f0ff', '#7b2dff', '#ff2d7b', '#ffd700', '#00ff88']
+            };
+            
+            chart.setOption(option);
+            window.addEventListener('resize', () => chart.resize());
+        }
+        
+        // ============================================
+        // 折线图 - 业务趋势
+        // ============================================
+        function initLineChart(data) {
+            const chart = echarts.init(document.getElementById('lineChart'));
+            
+            const option = {
+                backgroundColor: 'transparent',
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(10, 10, 15, 0.9)',
+                    borderColor: 'rgba(255, 215, 0, 0.3)',
+                    textStyle: { color: '#fff' }
+                },
+                legend: {
+                    data: ['新增', '宽带'],
+                    textStyle: { color: 'rgba(255, 255, 255, 0.6)' },
+                    top: 0
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '15%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: data.channels,
+                    axisLabel: {
+                        color: 'rgba(255, 255, 255, 0.6)',
+                        rotate: 30,
+                        fontSize: 10
+                    },
+                    axisLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.1)' } }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: { color: 'rgba(255, 255, 255, 0.6)' },
+                    axisLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.1)' } },
+                    splitLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.05)' } }
+                },
+                series: [
+                    {
+                        name: '新增',
+                        type: 'line',
+                        smooth: true,
+                        data: data.newAdds,
+                        lineStyle: { color: '#00f0ff', width: 3 },
+                        itemStyle: { color: '#00f0ff' },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: 'rgba(0, 240, 255, 0.3)' },
+                                { offset: 1, color: 'rgba(0, 240, 255, 0)' }
+                            ])
+                        }
+                    },
+                    {
+                        name: '宽带',
+                        type: 'line',
+                        smooth: true,
+                        data: data.broadband,
+                        lineStyle: { color: '#7b2dff', width: 3 },
+                        itemStyle: { color: '#7b2dff' },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: 'rgba(123, 45, 255, 0.3)' },
+                                { offset: 1, color: 'rgba(123, 45, 255, 0)' }
+                            ])
+                        }
+                    }
+                ]
+            };
+            
+            chart.setOption(option);
+            window.addEventListener('resize', () => chart.resize());
+        }
+        
+        // ============================================
+        // 渲染数据表格
+        // ============================================
+        function renderTable(rawData) {
+            const tbody = document.getElementById('tableBody');
+            
+            // 计算各列的最大值用于热力图
+            const maxValues = {
+                new_adds: Math.max(...rawData.map(r => r.new_adds)),
+                broadband: Math.max(...rawData.map(r => r.broadband)),
+                new_coins: Math.max(...rawData.map(r => r.new_coins)),
+                stock_coins: Math.max(...rawData.map(r => r.stock_coins)),
+                low_commission: Math.max(...rawData.map(r => r.low_commission)),
+                gigabit: Math.max(...rawData.map(r => r.gigabit)),
+                family_net: Math.max(...rawData.map(r => r.family_net)),
+                mobile_home: Math.max(...rawData.map(r => r.mobile_home))
+            };
+            
+            // 获取热力图颜色类
+            function getHeatClass(value, max) {
+                if (value === 0) return 'heat-zero';
+                const ratio = value / max;
+                if (ratio > 0.7) return 'heat-high';
+                if (ratio > 0.3) return 'heat-medium';
+                return 'heat-low';
+            }
+            
+            let html = '';
+            
+            // 数据行
+            rawData.forEach(row => {
+                html += `
+                    <tr>
+                        <td class="font-medium text-left pl-4">${row.channel_name}</td>
+                        <td class="${getHeatClass(row.new_adds, maxValues.new_adds)} rounded">${row.new_adds}</td>
+                        <td class="${getHeatClass(row.broadband, maxValues.broadband)} rounded">${row.broadband}</td>
+                        <td class="${getHeatClass(row.new_coins, maxValues.new_coins)} rounded">${row.new_coins}</td>
+                        <td class="${getHeatClass(row.stock_coins, maxValues.stock_coins)} rounded">${row.stock_coins}</td>
+                        <td class="${getHeatClass(row.low_commission, maxValues.low_commission)} rounded">${row.low_commission}</td>
+                        <td class="${getHeatClass(row.gigabit, maxValues.gigabit)} rounded">${row.gigabit}</td>
+                        <td class="${getHeatClass(row.family_net, maxValues.family_net)} rounded">${row.family_net}</td>
+                        <td class="${getHeatClass(row.mobile_home, maxValues.mobile_home)} rounded">${row.mobile_home}</td>
+                    </tr>
+                `;
+            });
+            
+            // 总计行
+            const totals = rawData.reduce((acc, row) => {
+                Object.keys(row).forEach(key => {
+                    if (key !== 'channel_name' && key !== 'id' && key !== 'created_at' && key !== 'updated_at') {
+                        acc[key] = (acc[key] || 0) + (parseInt(row[key]) || 0);
+                    }
+                });
+                return acc;
+            }, {});
+            
+            html += `
+                <tr class="bg-huisen-accent/10 font-bold">
+                    <td class="text-left pl-4 text-huisen-accent">总计</td>
+                    <td class="text-huisen-accent">${totals.new_adds || 0}</td>
+                    <td class="text-huisen-accent">${totals.broadband || 0}</td>
+                    <td class="text-huisen-accent">${totals.new_coins || 0}</td>
+                    <td class="text-huisen-accent">${totals.stock_coins || 0}</td>
+                    <td class="text-huisen-accent">${totals.low_commission || 0}</td>
+                    <td class="text-huisen-accent">${totals.gigabit || 0}</td>
+                    <td class="text-huisen-accent">${totals.family_net || 0}</td>
+                    <td class="text-huisen-accent">${totals.mobile_home || 0}</td>
+                </tr>
+            `;
+            
+            tbody.innerHTML = html;
+        }
+        
+        // ============================================
+        // AI 大脑卡片特效
+        // ============================================
+        function initAiBrainEffects() {
+            const card = document.getElementById('aiBrainCard');
+            const icon = document.getElementById('aiBrainIcon');
+            const btn = document.getElementById('launchAiBtn');
+            
+            if (!card || typeof gsap === 'undefined') return;
+            
+            // 卡片悬停效果 - 3D 倾斜
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 20;
+                const rotateY = (centerX - x) / 20;
+                
+                gsap.to(card, {
+                    rotateX: rotateX,
+                    rotateY: rotateY,
+                    duration: 0.5,
+                    ease: 'power2.out',
+                    transformPerspective: 1000
+                });
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, {
+                    rotateX: 0,
+                    rotateY: 0,
+                    duration: 0.5,
+                    ease: 'power2.out'
+                });
+            });
+            
+            // 按钮磁性吸附效果
+            if (btn) {
+                btn.addEventListener('mousemove', (e) => {
+                    const rect = btn.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    
+                    gsap.to(btn, {
+                        x: x * 0.2,
+                        y: y * 0.2,
+                        duration: 0.3,
+                        ease: 'power2.out'
+                    });
+                });
+                
+                btn.addEventListener('mouseleave', () => {
+                    gsap.to(btn, {
+                        x: 0,
+                        y: 0,
+                        duration: 0.5,
+                        ease: 'elastic.out(1, 0.5)'
+                    });
+                });
+            }
+        }
+        
+        // 在滚动动画初始化后调用
+        ScrollTrigger.create({
+            trigger: '#aiBrainCard',
+            start: 'top 80%',
+            onEnter: () => {
+                setTimeout(initAiBrainEffects, 500);
+            },
+            once: true
+        });
+        
+        // ============================================
+        // 平滑滚动
+        // ============================================
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
